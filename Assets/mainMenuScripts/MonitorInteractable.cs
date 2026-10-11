@@ -8,9 +8,13 @@ using UnityEngine.UI;
 public class MonitorInteractable : MonoBehaviour
 {
     [Header("Přiřazení")]
-    public Camera uiCamera;             // Kamera, co kreslí do RT
-    public RectTransform canvasRect;    // Canvas tohoto monitoru
-    public LayerMask screenLayer;       // Layer monitoru
+    public Camera uiCamera;
+    public RectTransform canvasRect;
+    public LayerMask screenLayer;
+
+    [Header("Omezení interakce")]
+    public MenuCameraPlacementHandler cameraHandler;
+    public MenuCameraPlacementHandler.CameraState allowedState;
 
     [Header("Debug")]
     public bool debugMode = false;
@@ -19,6 +23,10 @@ public class MonitorInteractable : MonoBehaviour
     private TerminalButton currentButton;
     private Selectable currentSelectable;
     private Collider monitorCollider;
+
+    private string debugPhysics = "Fyzika: Čekám...";
+    private string debugUV = "UV: Čekám...";
+    private string debugUI = "UI: Čekám...";
 
     void Awake()
     {
@@ -32,6 +40,12 @@ public class MonitorInteractable : MonoBehaviour
 
     void Update()
     {
+        if (cameraHandler != null && cameraHandler.CurrentState != allowedState)
+        {
+            ClearHover();
+            return;
+        }
+
         if (playerCamera == null || uiCamera == null || canvasRect == null) return;
         if (Mouse.current == null) return;
 
@@ -40,6 +54,8 @@ public class MonitorInteractable : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, 30f, screenLayer))
         {
+            debugPhysics = $"Zasažen objekt: {hit.collider.name}";
+
             if (hit.collider == monitorCollider)
             {
                 Vector3 localPoint = transform.InverseTransformPoint(hit.point);
@@ -53,6 +69,7 @@ public class MonitorInteractable : MonoBehaviour
                 }
 
                 Vector2 uv = new Vector2(Mathf.Clamp01(u), Mathf.Clamp01(v));
+                debugUV = $"UV: {uv.x:F3}, {uv.y:F3}";
 
                 Vector2 virtualMousePos = new Vector2(
                     uv.x * uiCamera.pixelWidth,
@@ -66,19 +83,29 @@ public class MonitorInteractable : MonoBehaviour
                     position = virtualMousePos
                 };
 
-                List<RaycastResult> results = new List<RaycastResult>();
-                EventSystem.current.RaycastAll(pointerData, results);
-
                 TerminalButton hitButton = null;
                 Selectable hitSelectable = null;
 
-                if (results.Count > 0)
+                TerminalButton[] allButtons = canvasRect.GetComponentsInChildren<TerminalButton>();
+                foreach (TerminalButton btn in allButtons)
                 {
-                    hitButton = results[0].gameObject.GetComponentInParent<TerminalButton>();
-                    hitSelectable = results[0].gameObject.GetComponentInParent<Selectable>();
-                }
+                    if (!btn.gameObject.activeInHierarchy) continue;
 
-                // 1. Změna HOVER stavu
+                    RectTransform btnRect = btn.GetComponent<RectTransform>();
+
+                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(btnRect, virtualMousePos, uiCamera, out Vector2 btnLocalPoint))
+                    {
+                        if (btnRect.rect.Contains(btnLocalPoint)) 
+                        {
+                            hitButton = btn;
+                            hitSelectable = btn.GetComponent<Selectable>();
+                            debugUI = $"Trefeno MATEMATICKY: {btn.gameObject.name}";
+                            break;
+                        }
+                    }
+                }
+                if (hitButton == null) debugUI = "UI: Mimo tlačítka";
+
                 if (hitButton != currentButton)
                 {
                     if (currentButton != null) currentButton.OnHoverExit();
@@ -86,7 +113,6 @@ public class MonitorInteractable : MonoBehaviour
                     if (currentButton != null) currentButton.OnHoverEnter();
                 }
 
-                // Podpora i pro nativní Unity Button stavy
                 if (hitSelectable != currentSelectable)
                 {
                     if (currentSelectable != null)
@@ -97,8 +123,6 @@ public class MonitorInteractable : MonoBehaviour
                     if (currentSelectable != null)
                         ExecuteEvents.Execute(currentSelectable.gameObject, pointerData, ExecuteEvents.pointerEnterHandler);
                 }
-
-                // 2. KLIKNUTÍ (Active / Inactive toggle)
                 if (Mouse.current.leftButton.wasPressedThisFrame)
                 {
                     if (currentButton != null) currentButton.OnClick();
@@ -109,6 +133,12 @@ public class MonitorInteractable : MonoBehaviour
                 }
                 return;
             }
+        }
+        else
+        {
+            debugPhysics = "Paprsek myši netrefil žádný monitor.";
+            debugUV = "UV: ---";
+            debugUI = "UI: ---";
         }
 
         ClearHover();
@@ -131,4 +161,28 @@ public class MonitorInteractable : MonoBehaviour
     }
 
     void OnDisable() => ClearHover();
+
+    private void OnGUI()
+    {
+        if (!debugMode || (cameraHandler != null && cameraHandler.CurrentState != allowedState)) return;
+
+        float boxWidth = 450f;
+        float boxHeight = 110f;
+        Rect bgRect = new Rect(Screen.width - boxWidth - 20, 20, boxWidth, boxHeight);
+
+        GUI.color = new Color(0, 0, 0, 0.8f);
+        GUI.DrawTexture(bgRect, Texture2D.whiteTexture);
+        GUI.color = Color.white;
+
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 16;
+        style.normal.textColor = Color.green;
+
+        GUI.Label(new Rect(bgRect.x + 10, bgRect.y + 10, boxWidth, 25), $"--- DEBUG: {gameObject.name} ---", style);
+
+        style.normal.textColor = Color.white;
+        GUI.Label(new Rect(bgRect.x + 10, bgRect.y + 35, boxWidth, 25), debugPhysics, style);
+        GUI.Label(new Rect(bgRect.x + 10, bgRect.y + 55, boxWidth, 25), debugUV, style);
+        GUI.Label(new Rect(bgRect.x + 10, bgRect.y + 75, boxWidth, 25), debugUI, style);
+    }
 }

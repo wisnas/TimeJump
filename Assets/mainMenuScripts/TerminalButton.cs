@@ -12,24 +12,41 @@ public class TerminalButton : MonoBehaviour
     public Sprite activeSprite;
 
     [Header("Text Colors")]
-    public Color textHoverColor = Color.white;
-    public Color textActiveColor = Color.green;
+    public Color textHoverColor = Color.black;
+    public Color textActiveColor = Color.white;
 
     [Header("Active State Settings")]
     public bool isActive = false;
-    public float activeWidthOffset = 80f; // Rozšíření o 80 px
+    public float activeWidthOffset = 80f;
+
+    [Header("Menu Connection")]
+    public GameObject targetPanel;
+
+    public TerminalButton parentScript;
 
     [Header("Event")]
     public UnityEvent onClick;
 
     private Image targetImage;
-    private TextMeshProUGUI buttonText;
-    private Color normalTextColor;
+    private TextMeshProUGUI[] buttonTexts;
+    private Color[] normalTextColors;
     private RectTransform rectTransform;
 
-    // Uložené výchozí hodnoty
     private float defaultWidth;
     private Vector2 defaultAnchoredPos;
+
+    private void OnDisable()
+    {
+        if (isActive)
+        {
+            SetActiveState(false);
+
+            if (targetPanel != null)
+            {
+                targetPanel.SetActive(false);
+            }
+        }
+    }
 
     void Awake()
     {
@@ -39,14 +56,12 @@ public class TerminalButton : MonoBehaviour
         defaultWidth = rectTransform.sizeDelta.x;
         defaultAnchoredPos = rectTransform.anchoredPosition;
 
-        if (buttonText == null)
-        {
-            buttonText = GetComponentInChildren<TextMeshProUGUI>(true);
-        }
+        buttonTexts = GetComponentsInChildren<TextMeshProUGUI>(true);
+        normalTextColors = new Color[buttonTexts.Length];
 
-        if (buttonText != null)
+        for (int i = 0; i < buttonTexts.Length; i++)
         {
-            normalTextColor = buttonText.color;
+            normalTextColors[i] = buttonTexts[i].color;
         }
 
         if (normalSprite == null && targetImage.sprite != null)
@@ -70,25 +85,33 @@ public class TerminalButton : MonoBehaviour
 
     private void ApplyStateVisuals()
     {
+        if (targetPanel != null)
+        {
+            targetPanel.SetActive(isActive);
+        }
+
         if (isActive)
         {
-            // 1. Zvětšíme šířku o 80 px
             rectTransform.sizeDelta = new Vector2(defaultWidth + activeWidthOffset, rectTransform.sizeDelta.y);
-
-            // 2. Posuneme celé tlačítko doprava o polovinu offsetu (80 / 2 = 40 px)
-            // Tím levá strana a text zůstanou na milimetr přesně na původním místě!
             rectTransform.anchoredPosition = new Vector2(defaultAnchoredPos.x + (activeWidthOffset * 0.5f), defaultAnchoredPos.y);
 
-            if (buttonText != null) buttonText.color = textActiveColor;
+            for (int i = 0; i < buttonTexts.Length; i++)
+            {
+                if (buttonTexts[i] != null) buttonTexts[i].color = textActiveColor;
+            }
+
             if (targetImage != null && activeSprite != null) targetImage.sprite = activeSprite;
         }
         else
         {
-            // Návrat na původní rozměry a pozici
             rectTransform.sizeDelta = new Vector2(defaultWidth, rectTransform.sizeDelta.y);
             rectTransform.anchoredPosition = defaultAnchoredPos;
 
-            if (buttonText != null) buttonText.color = normalTextColor;
+            for (int i = 0; i < buttonTexts.Length; i++)
+            {
+                if (buttonTexts[i] != null) buttonTexts[i].color = normalTextColors[i];
+            }
+
             if (targetImage != null && normalSprite != null) targetImage.sprite = normalSprite;
         }
     }
@@ -100,8 +123,10 @@ public class TerminalButton : MonoBehaviour
         if (highlightedSprite != null && targetImage != null)
             targetImage.sprite = highlightedSprite;
 
-        if (buttonText != null)
-            buttonText.color = textHoverColor;
+        for (int i = 0; i < buttonTexts.Length; i++)
+        {
+            if (buttonTexts[i] != null) buttonTexts[i].color = textHoverColor;
+        }
     }
 
     public void OnHoverExit()
@@ -111,8 +136,10 @@ public class TerminalButton : MonoBehaviour
         if (normalSprite != null && targetImage != null)
             targetImage.sprite = normalSprite;
 
-        if (buttonText != null)
-            buttonText.color = normalTextColor;
+        for (int i = 0; i < buttonTexts.Length; i++)
+        {
+            if (buttonTexts[i] != null) buttonTexts[i].color = normalTextColors[i];
+        }
     }
 
     public void OnClick()
