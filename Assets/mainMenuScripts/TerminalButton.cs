@@ -12,6 +12,7 @@ public class TerminalButton : MonoBehaviour
     public Sprite activeSprite;
 
     [Header("Text Colors")]
+    public bool changeColor = true;
     public Color textHoverColor = Color.black;
     public Color textActiveColor = Color.white;
 
@@ -19,13 +20,20 @@ public class TerminalButton : MonoBehaviour
     public bool isActive = false;
     public float activeWidthOffset = 80f;
 
+    public enum buttonEnum
+    {
+        Radio,
+        Button,
+    }
+    public buttonEnum buttonType;
+
     [Header("Menu Connection")]
     public GameObject targetPanel;
-
     public TerminalButton parentScript;
 
     [Header("Event")]
     public UnityEvent onClick;
+    public UnityEvent onDeactivate;
 
     private Image targetImage;
     private TextMeshProUGUI[] buttonTexts;
@@ -59,9 +67,12 @@ public class TerminalButton : MonoBehaviour
         buttonTexts = GetComponentsInChildren<TextMeshProUGUI>(true);
         normalTextColors = new Color[buttonTexts.Length];
 
-        for (int i = 0; i < buttonTexts.Length; i++)
+        if (changeColor)
         {
-            normalTextColors[i] = buttonTexts[i].color;
+            for (int i = 0; i < buttonTexts.Length; i++)
+            {
+                normalTextColors[i] = buttonTexts[i].color;
+            }
         }
 
         if (normalSprite == null && targetImage.sprite != null)
@@ -94,12 +105,13 @@ public class TerminalButton : MonoBehaviour
         {
             rectTransform.sizeDelta = new Vector2(defaultWidth + activeWidthOffset, rectTransform.sizeDelta.y);
             rectTransform.anchoredPosition = new Vector2(defaultAnchoredPos.x + (activeWidthOffset * 0.5f), defaultAnchoredPos.y);
-
-            for (int i = 0; i < buttonTexts.Length; i++)
+            if (changeColor)
             {
-                if (buttonTexts[i] != null) buttonTexts[i].color = textActiveColor;
+                for (int i = 0; i < buttonTexts.Length; i++)
+                {
+                    if (buttonTexts[i] != null) buttonTexts[i].color = textActiveColor;
+                }
             }
-
             if (targetImage != null && activeSprite != null) targetImage.sprite = activeSprite;
         }
         else
@@ -107,12 +119,17 @@ public class TerminalButton : MonoBehaviour
             rectTransform.sizeDelta = new Vector2(defaultWidth, rectTransform.sizeDelta.y);
             rectTransform.anchoredPosition = defaultAnchoredPos;
 
-            for (int i = 0; i < buttonTexts.Length; i++)
+            if (changeColor)
             {
-                if (buttonTexts[i] != null) buttonTexts[i].color = normalTextColors[i];
+                for (int i = 0; i < buttonTexts.Length; i++)
+                {
+                    if (buttonTexts[i] != null) buttonTexts[i].color = normalTextColors[i];
+                }
             }
 
             if (targetImage != null && normalSprite != null) targetImage.sprite = normalSprite;
+
+            onDeactivate?.Invoke();
         }
     }
 
@@ -122,10 +139,12 @@ public class TerminalButton : MonoBehaviour
 
         if (highlightedSprite != null && targetImage != null)
             targetImage.sprite = highlightedSprite;
-
-        for (int i = 0; i < buttonTexts.Length; i++)
+        if (changeColor)
         {
-            if (buttonTexts[i] != null) buttonTexts[i].color = textHoverColor;
+            for (int i = 0; i < buttonTexts.Length; i++)
+            {
+                if (buttonTexts[i] != null) buttonTexts[i].color = textHoverColor;
+            }
         }
     }
 
@@ -136,15 +155,22 @@ public class TerminalButton : MonoBehaviour
         if (normalSprite != null && targetImage != null)
             targetImage.sprite = normalSprite;
 
-        for (int i = 0; i < buttonTexts.Length; i++)
+        if (changeColor)
         {
-            if (buttonTexts[i] != null) buttonTexts[i].color = normalTextColors[i];
+            for (int i = 0; i < buttonTexts.Length; i++)
+            {
+                if (buttonTexts[i] != null) buttonTexts[i].color = normalTextColors[i];
+            }
         }
+        
     }
 
     public void OnClick()
     {
-        ToggleActiveState();
+        if (buttonType == buttonEnum.Radio)
+        {
+            ToggleActiveState();
+        }
         onClick?.Invoke();
     }
 }

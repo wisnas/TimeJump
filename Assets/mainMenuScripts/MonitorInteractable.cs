@@ -24,9 +24,9 @@ public class MonitorInteractable : MonoBehaviour
     private Selectable currentSelectable;
     private Collider monitorCollider;
 
-    private string debugPhysics = "Fyzika: Čekám...";
-    private string debugUV = "UV: Čekám...";
-    private string debugUI = "UI: Čekám...";
+    private string debugPhysics = "Fyzika";
+    private string debugUV = "UV:";
+    private string debugUI = "UI:";
 
     void Awake()
     {
@@ -54,7 +54,7 @@ public class MonitorInteractable : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, 30f, screenLayer))
         {
-            debugPhysics = $"Zasažen objekt: {hit.collider.name}";
+            debugPhysics = $"objekt: {hit.collider.name}";
 
             if (hit.collider == monitorCollider)
             {
@@ -87,24 +87,28 @@ public class MonitorInteractable : MonoBehaviour
                 Selectable hitSelectable = null;
 
                 TerminalButton[] allButtons = canvasRect.GetComponentsInChildren<TerminalButton>();
-                foreach (TerminalButton btn in allButtons)
+
+                for (int i = allButtons.Length - 1; i >= 0; i--)
                 {
-                    if (!btn.gameObject.activeInHierarchy) continue;
+                    TerminalButton btn = allButtons[i];
+
+                    if (!btn.gameObject.activeInHierarchy || !btn.enabled) continue;
 
                     RectTransform btnRect = btn.GetComponent<RectTransform>();
 
                     if (RectTransformUtility.ScreenPointToLocalPointInRectangle(btnRect, virtualMousePos, uiCamera, out Vector2 btnLocalPoint))
                     {
-                        if (btnRect.rect.Contains(btnLocalPoint)) 
+                        if (btnRect.rect.Contains(btnLocalPoint))
                         {
                             hitButton = btn;
                             hitSelectable = btn.GetComponent<Selectable>();
-                            debugUI = $"Trefeno MATEMATICKY: {btn.gameObject.name}";
+                            debugUI = $"Hit: {btn.gameObject.name}";
+
                             break;
                         }
                     }
                 }
-                if (hitButton == null) debugUI = "UI: Mimo tlačítka";
+                if (hitButton == null) debugUI = "UI: none";
 
                 if (hitButton != currentButton)
                 {
