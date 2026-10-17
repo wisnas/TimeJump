@@ -42,6 +42,7 @@ public class MenuCameraPlacementHandler : MonoBehaviour
 
     private void Awake()
     {
+
         canSwitch = true;
         if (targetCamera == null)
             targetCamera = Camera.main;

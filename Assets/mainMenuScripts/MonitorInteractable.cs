@@ -12,6 +12,9 @@ public class MonitorInteractable : MonoBehaviour
     public RectTransform canvasRect;
     public LayerMask screenLayer;
 
+    [Header("Prioritní okno (Detail Levelu)")]
+    public RectTransform priorityPanel;
+
     [Header("Omezení interakce")]
     public MenuCameraPlacementHandler cameraHandler;
     public MenuCameraPlacementHandler.CameraState allowedState;
@@ -26,7 +29,7 @@ public class MonitorInteractable : MonoBehaviour
 
     private GameObject draggingObject;
     private Slider draggingSlider;
-    private Scrollbar draggingScrollbar; 
+    private Scrollbar draggingScrollbar;
 
     private string debugPhysics = "Fyzika";
     private string debugUV = "UV:";
@@ -100,6 +103,18 @@ public class MonitorInteractable : MonoBehaviour
                     position = virtualMousePos
                 };
 
+                bool isOverPriorityArea = false;
+                if (priorityPanel != null && priorityPanel.gameObject.activeInHierarchy)
+                {
+                    if (RectTransformUtility.ScreenPointToLocalPointInRectangle(priorityPanel, virtualMousePos, uiCamera, out Vector2 priorityLocal))
+                    {
+                        if (priorityPanel.rect.Contains(priorityLocal))
+                        {
+                            isOverPriorityArea = true;
+                        }
+                    }
+                }
+
                 float scrollY = Mouse.current.scroll.ReadValue().y;
                 if (Mathf.Abs(scrollY) > 0.01f)
                 {
@@ -108,12 +123,14 @@ public class MonitorInteractable : MonoBehaviour
                     {
                         if (!sr.gameObject.activeInHierarchy || !sr.enabled) continue;
 
+                        if (isOverPriorityArea && !sr.transform.IsChildOf(priorityPanel)) continue;
+
                         RectTransform checkRect = sr.viewport != null ? sr.viewport : sr.GetComponent<RectTransform>();
                         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(checkRect, virtualMousePos, uiCamera, out Vector2 localPt))
                         {
                             if (checkRect.rect.Contains(localPt))
                             {
-                                pointerData.scrollDelta = new Vector2(0f, Mathf.Sign(scrollY) * 4f); 
+                                pointerData.scrollDelta = new Vector2(0f, Mathf.Sign(scrollY) * 4f);
                                 ExecuteEvents.ExecuteHierarchy(sr.gameObject, pointerData, ExecuteEvents.scrollHandler);
                                 break;
                             }
@@ -129,6 +146,10 @@ public class MonitorInteractable : MonoBehaviour
                 {
                     Selectable sel = allSelectables[i];
                     if (!sel.gameObject.activeInHierarchy || !sel.interactable) continue;
+
+                    if (isOverPriorityArea && !sel.transform.IsChildOf(priorityPanel)) continue;
+
+                    if (!IsPointInsideViewport(sel.gameObject, virtualMousePos)) continue;
 
                     if (IsPointOverSelectable(sel, virtualMousePos))
                     {
@@ -146,6 +167,10 @@ public class MonitorInteractable : MonoBehaviour
                     {
                         TerminalButton btn = allButtons[i];
                         if (!btn.gameObject.activeInHierarchy || !btn.enabled) continue;
+
+                        if (isOverPriorityArea && !btn.transform.IsChildOf(priorityPanel)) continue;
+
+                        if (!IsPointInsideViewport(btn.gameObject, virtualMousePos)) continue;
 
                         RectTransform btnRect = btn.GetComponent<RectTransform>();
                         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(btnRect, virtualMousePos, uiCamera, out Vector2 btnLocalPoint))
@@ -236,6 +261,22 @@ public class MonitorInteractable : MonoBehaviour
         }
 
         ClearHover();
+    }
+
+    private bool IsPointInsideViewport(GameObject uiElement, Vector2 screenPos)
+    {
+        ScrollRect parentScroll = uiElement.GetComponentInParent<ScrollRect>();
+        if (parentScroll != null)
+        {
+            RectTransform checkRect = parentScroll.viewport != null ? parentScroll.viewport : parentScroll.GetComponent<RectTransform>();
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(checkRect, screenPos, uiCamera, out Vector2 viewportLocal))
+            {
+                return checkRect.rect.Contains(viewportLocal);
+            }
+            return false;
+        }
+        return true;
     }
 
     private bool IsPointOverSelectable(Selectable sel, Vector2 screenPos)
