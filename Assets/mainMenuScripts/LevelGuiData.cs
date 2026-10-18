@@ -39,7 +39,6 @@ public class LevelGuiData : MonoBehaviour
     {
         if (panel != null && currentLevel != null)
         {
-            // Pøidat tento øádek: Vynutí pøesun panelu na konec hierarchie (do popøedí)
             panel.transform.SetAsLastSibling();
 
             panel.ShowData(currentLevel);
