@@ -30,6 +30,7 @@ public class MenuCameraPlacementHandler : MonoBehaviour
 
     [Header("Monitor Click")]
     [SerializeField] private Collider monitor1Collider;
+    [SerializeField] private Collider monitor2Collider;
 
     [Header("Bars")]
     [SerializeField] private Button LeftBar;
@@ -75,12 +76,16 @@ public class MenuCameraPlacementHandler : MonoBehaviour
         Ray ray = targetCamera.ScreenPointToRay(mousePos);
 
         bool isHovering = false;
-
+        bool isHovering2 = false;
         if (Physics.Raycast(ray, out RaycastHit hit, 100f))
         {
             if (hit.collider == monitor1Collider)
             {
                 isHovering = true;
+            }
+            if (hit.collider == monitor2Collider)
+            {
+                isHovering2 = true;
             }
         }
         
@@ -88,6 +93,11 @@ public class MenuCameraPlacementHandler : MonoBehaviour
         if (isHovering && mouse.leftButton.wasPressedThisFrame)
         {
             SwitchState(CameraState.Monitor1);
+        }
+
+        if (isHovering2 && mouse.leftButton.wasPressedThisFrame)
+        {
+            SwitchState(CameraState.Monitor2);
         }
     }
 

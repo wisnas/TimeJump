@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 public class DoorsHandler : MonoBehaviour
 {
     private Camera targetCamera;
+    public Canvas UiCanvas;
     public Collider doorColidor;
     public GameObject doorPivot;
 
@@ -58,7 +59,11 @@ public class DoorsHandler : MonoBehaviour
         {
             hoverTimer += Time.deltaTime;
 
-            if (hoverTimer >= delay)
+            if (openProgress > 0)
+            {
+                openProgress += Time.deltaTime / animationDuration;
+            }
+            else if (hoverTimer >= delay)
             {
                 openProgress += Time.deltaTime / animationDuration;
             }
@@ -77,9 +82,10 @@ public class DoorsHandler : MonoBehaviour
         doorPivot.transform.localRotation = Quaternion.Slerp(closeRotation, openRotation, curveT);
 
 
-        if (isHovering && mouse.leftButton.wasPressedThisFrame)
-        {
-
+        if (isHovering && mouse.leftButton.wasPressedThisFrame && doorPivot.transform.localRotation == openRotation)
+        {   
+            UnityEditor.EditorApplication.isPlaying = false;
+            Application.Quit();
         }
     }
 
