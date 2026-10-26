@@ -2541,6 +2541,7 @@ GameObject:
   - component: {fileID: 7599010130871281398}
   - component: {fileID: 5079509310237567642}
   - component: {fileID: 5009368357223498012}
+  - component: {fileID: 9101836453261789991}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2548,6 +2549,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &9101836453261789991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9101836453261789990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e187574c7b55d49b5d41b112d6e7c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenResChanger
+  targetMaterial: {fileID: 2100000, guid: 4dd67d113ab06c94ababb8b60a3b31b9, type: 2}
+  SceneName: MainMenu
+  MenuSceneFloat: 2
+  GameSceneFloat: 3
+  parameterName: _PixelSize
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

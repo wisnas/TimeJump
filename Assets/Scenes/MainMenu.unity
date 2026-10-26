@@ -919,10 +919,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown/DropdownItem
-  m_Text: {fileID: 72338041}
-  m_Image: {fileID: 0}
-  m_RectTransform: {fileID: 55366046}
-  m_Toggle: {fileID: 55366048}
 --- !u!114 &55366048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1634,10 +1630,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown/DropdownItem
-  m_Text: {fileID: 1374523124}
-  m_Image: {fileID: 0}
-  m_RectTransform: {fileID: 97672291}
-  m_Toggle: {fileID: 97672293}
 --- !u!114 &97672293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7101,10 +7093,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown/DropdownItem
-  m_Text: {fileID: 645364852}
-  m_Image: {fileID: 0}
-  m_RectTransform: {fileID: 621887059}
-  m_Toggle: {fileID: 621887061}
 --- !u!114 &621887061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7340,10 +7328,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown/DropdownItem
-  m_Text: {fileID: 330297359}
-  m_Image: {fileID: 0}
-  m_RectTransform: {fileID: 631693833}
-  m_Toggle: {fileID: 631693835}
 --- !u!114 &631693835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11368,6 +11352,7 @@ GameObject:
   - component: {fileID: 1005295918}
   - component: {fileID: 1005295917}
   - component: {fileID: 1005295915}
+  - component: {fileID: 1005295920}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -11547,6 +11532,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1005295920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005295914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e187574c7b55d49b5d41b112d6e7c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScreenResChanger
+  targetMaterial: {fileID: 2100000, guid: 4dd67d113ab06c94ababb8b60a3b31b9, type: 2}
+  SceneName: MainMenu
+  MenuSceneFloat: 2
+  GameSceneFloat: 3
+  parameterName: _PixelSize
 --- !u!1 &1014115927
 GameObject:
   m_ObjectHideFlags: 0
@@ -20143,10 +20145,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_Dropdown/DropdownItem
-  m_Text: {fileID: 1386719175}
-  m_Image: {fileID: 0}
-  m_RectTransform: {fileID: 1817568669}
-  m_Toggle: {fileID: 1817568671}
 --- !u!114 &1817568671
 MonoBehaviour:
   m_ObjectHideFlags: 0
