@@ -10,6 +10,8 @@ public class Level
     public string Name;
     public string Difficulty;
     public string Info;
+
+    public string SceneName;
 }
 
 [Serializable]

@@ -83,8 +83,10 @@ public class DoorsHandler : MonoBehaviour
 
 
         if (isHovering && mouse.leftButton.wasPressedThisFrame && doorPivot.transform.localRotation == openRotation)
-        {   
+        {
+            #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
+            #endif
             Application.Quit();
         }
     }

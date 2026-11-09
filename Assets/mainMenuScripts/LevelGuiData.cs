@@ -1,8 +1,9 @@
 using System;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using Unity.VectorGraphics;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class LevelGuiData : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class LevelGuiData : MonoBehaviour
     public string Name;
     public string Difficulty;
     public string Info;
+
+    public string SceneName;
     private void Awake()
     {
         panel = FindFirstObjectByType<LevelDetailPanel>(FindObjectsInactive.Include);
@@ -31,6 +34,7 @@ public class LevelGuiData : MonoBehaviour
         Name = level.Name;
         Difficulty = level.Difficulty;
         Info = level.Info;
+        SceneName = level.Info;
 
         if (nameText != null) nameText.text = $"{Id}.{Name}";
         if (timeText != null) timeText.text = $"TIME: {Time}";

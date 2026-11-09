@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelDetailPanel : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class LevelDetailPanel : MonoBehaviour
     public string Name;
     public string Difficulty;
     public string Info;
+
+    public string SceneName;
 
     [Header("Texty na prefabu karty")]
     [SerializeField] private TextMeshProUGUI nameText;
@@ -29,10 +32,16 @@ public class LevelDetailPanel : MonoBehaviour
         Name = level.Name;
         Difficulty = level.Difficulty;
         Info = level.Info;
+        SceneName = level.SceneName;
 
         nameText.text = $"{Id}.{Name}";
         timeText.text = $"TIME: {Time}";
         // pridat difftext
         infoText.text = Info; 
+    }
+
+    public void LoadLevelByName()
+    {
+        SceneManager.LoadScene(SceneName);
     }
 }
